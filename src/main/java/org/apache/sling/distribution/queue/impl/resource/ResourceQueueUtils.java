@@ -211,7 +211,8 @@ public class ResourceQueueUtils {
 
         properties.put("sling:resourceType", RESOURCE_ITEM);
         properties.put(ENTERED_DATE, Calendar.getInstance());
-        Resource resourceItem = ResourceUtil.getOrCreateResource(resourceResolver, entryPath, properties, RESOURCE_FOLDER, true);
+        Resource resourceItem =
+                ResourceUtil.getOrCreateResource(resourceResolver, entryPath, properties, RESOURCE_FOLDER, true);
 
         resourceResolver.commit();
 

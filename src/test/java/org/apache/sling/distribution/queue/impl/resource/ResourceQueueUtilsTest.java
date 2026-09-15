@@ -95,6 +95,32 @@ public class ResourceQueueUtilsTest {
     }
 
     @Test
+    public void testGetStatusUsesCappedCountByDefault() throws Exception {
+        String agentPath = QUEUES_ROOT + QUEUE_NAME;
+        DistributionQueue queue = new ResourceQueue(rrf, "test", QUEUE_NAME, agentPath);
+
+        for (int i = 0; i < ResourceQueueUtils.STATUS_ITEMS_COUNT_CAP + 5; i++) {
+            queue.add(new DistributionQueueItem(randomUUID().toString(), emptyMap()));
+        }
+
+        assertEquals(
+                ResourceQueueUtils.STATUS_ITEMS_COUNT_CAP, queue.getStatus().getItemsCount());
+    }
+
+    @Test
+    public void testGetStatusUsesExactCountWhenConfigured() throws Exception {
+        String agentPath = QUEUES_ROOT + QUEUE_NAME;
+        DistributionQueue queue = new ResourceQueue(rrf, "test", QUEUE_NAME, agentPath, true);
+
+        for (int i = 0; i < ResourceQueueUtils.STATUS_ITEMS_COUNT_CAP + 5; i++) {
+            queue.add(new DistributionQueueItem(randomUUID().toString(), emptyMap()));
+        }
+
+        assertEquals(
+                ResourceQueueUtils.STATUS_ITEMS_COUNT_CAP + 5, queue.getStatus().getItemsCount());
+    }
+
+    @Test
     public void testIsSafeToDelete() throws Exception {
 
         assertTrue(ResourceQueueUtils.isSafeToDelete("2018/02/15/03/09", "2017"));
