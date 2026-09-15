@@ -65,7 +65,7 @@ public class ResourceQueueUtils {
     private static final String PROCESSING_ATTEMPTS = "processing.attempts";
 
     /**
-     * Cap on how many entries getResourceCount() will traverse when computing queue size for
+     * Cap on how many entries getResourceCountCapped() will traverse when computing queue size for
      * status/console. Queues larger than this report STATUS_ITEMS_COUNT_CAP instead of the exact count,
      * so status lookups on very large queues stay bounded.
      */
@@ -186,9 +186,9 @@ public class ResourceQueueUtils {
         return null;
     }
 
-    public static Resource getRootResource(ResourceResolver resourceResolver, String rootPath) throws PersistenceException {
+    public static Resource getRootResource(ResourceResolver resourceResolver, String rootPath)
+            throws PersistenceException {
         Resource resource =
-
                 ResourceUtil.getOrCreateResource(resourceResolver, rootPath, RESOURCE_FOLDER, RESOURCE_ROOT, true);
 
         return resource;
@@ -310,6 +310,17 @@ public class ResourceQueueUtils {
     }
 
     public static int getResourceCount(Resource root) {
+        return getEntries(root, 0, -1).size();
+    }
+
+    /**
+     * Like getResourceCount(), but bounds the amount of traversal done: once more than
+     * STATUS_ITEMS_COUNT_CAP entries have been seen, stops early and returns STATUS_ITEMS_COUNT_CAP
+     * instead of the exact count. Intended for status/console displays on potentially very large
+     * queues, where an exact count is not required and a full traversal would be too expensive.
+     * Callers that need the exact size should use getResourceCount() instead.
+     */
+    public static int getResourceCountCapped(Resource root) {
         Iterator<Resource> it = new ResourceIterator(root, RESOURCE_FOLDER, false, true);
 
         int count = 0;

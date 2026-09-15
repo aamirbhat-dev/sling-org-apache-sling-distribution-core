@@ -56,7 +56,7 @@ public class ActiveResourceQueue extends ResourceQueue {
             resourceResolver = DistributionUtils.loginService(resolverFactory, serviceName);
             Resource queueRoot = ResourceQueueUtils.getRootResource(resourceResolver, queueRootPath);
 
-            int count = ResourceQueueUtils.getResourceCount(queueRoot);
+            int count = ResourceQueueUtils.getResourceCountCapped(queueRoot);
 
             DistributionQueueEntry head = ResourceQueueUtils.getHead(queueRoot);
             DistributionQueueItem firstItem = (null != head) ? head.getItem() : null;
